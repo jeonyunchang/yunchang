@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>윤창의 지도</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <header class="profile">
+        <div class="avatar">윤</div>
+        <div>
+          <h1>윤창</h1>
+          <p class="subtitle">Researcher · 지리 교사</p>
+        </div>
+      </header>
+
+      <p class="intro">
+        나와 관련된 장소를 지도 위에 모았습니다. 마커를 클릭하거나 목록에서 장소를 선택해 보세요.
+      </p>
+
+      <section class="places">
+        <h2>장소 목록</h2>
+        <ul id="place-list" class="place-list"></ul>
+      </section>
+    </aside>
+
+    <main class="map-panel">
+      <div id="map"></div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
