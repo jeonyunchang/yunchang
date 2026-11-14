@@ -1,90 +1,182 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="light">
-  <meta name="description" content="교육, 연구, 업무, 자기계발에 관한 개인 기록 아카이브">
-  <title>나의 아카이브 | 개인 기록</title>
-  <link rel="stylesheet" href="./style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f9f6">
+  <title>記 나의 아카이브</title>
+  <link rel="stylesheet" href="/yunchang/style.css?v=20261114c">
+  <script src="/yunchang/app.js?v=20261114c" defer></script>
 </head>
 <body>
-  <!--
-    읽기 전용 GitHub Pages 아카이브
-    1) 게시글 작성/수정/삭제: GitHub의 data/posts.json 파일에서만 수행
-    2) 이 HTML에는 글쓰기 API, 공개 입력 폼, 저장 기능이 없음
-    3) 현재 운영 중인 기존 웹사이트의 원본 코드를 확인하지 못해 이 파일은 독립형 대체 템플릿임
-    4) 기존 글/디자인이 자동으로 이전되는 것은 아님. 기존 index.html을 먼저 백업하세요.
-  -->
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="./" aria-label="아카이브 홈으로 이동">
-        <span class="brand-icon" aria-hidden="true">記</span>
-        <span>나의 아카이브</span>
+      <a class="brand" href="/yunchang/">
+        <span class="brand-icon">記</span> 나의 <b>아카이브</b>
       </a>
-      <nav class="nav" aria-label="주요 메뉴">
-        <a href="#articles" data-category="all" class="active">전체</a>
-        <a href="#articles" data-category="education">교육</a>
-        <a href="#articles" data-category="research">연구</a>
-        <a href="#articles" data-category="work">업무</a>
-        <a href="#articles" data-category="self-development">자기계발</a>
+      <nav class="navigation" aria-label="분야별 메뉴">
+        <button class="nav-btn active" data-category="all" type="button">전체</button>
+        <button class="nav-btn" data-category="education" type="button">교육</button>
+        <button class="nav-btn" data-category="research" type="button">연구</button>
+        <button class="nav-btn" data-category="work" type="button">업무</button>
+        <button class="nav-btn" data-category="self-development" type="button">자기계발</button>
       </nav>
+      <button id="writeOpen" class="btn btn-green" type="button">＋ 글쓰기</button>
     </div>
   </header>
 
   <main>
-    <section class="container hero" aria-labelledby="hero-title">
-      <div>
-        <div class="eyebrow">PERSONAL ARCHIVE · 기록을 쌓는 공간</div>
-        <h1 id="hero-title">하루의 경험을<br><em>오래 남는 기록으로.</em></h1>
-        <p class="hero-copy">교육, 연구, 업무 그리고 자기계발. 배우고 시도했던 순간들을 차곡차곡 모아두는 개인 아카이브입니다.</p>
-        <div class="hero-actions"><a href="#articles" class="hero-action">기록 둘러보기 <span aria-hidden="true">↗</span></a></div>
+    <section class="hero container">
+      <div class="hero-copy">
+        <p class="eyebrow">● PERSONAL ARCHIVE <span>· 기록을 쌓는 공간</span></p>
+        <h1>하루의 경험을<br><em>오래 남는 기록으로.</em></h1>
+        <p class="lead">교육, 연구, 업무 그리고 자기계발.<br>배우고 시도했던 순간들을 차곡차곡 모아두는 개인 아카이브입니다.</p>
+        <a class="btn btn-green hero-link" href="#archive">기록 둘러보기 ↗</a>
       </div>
-      <aside class="intro-card" aria-label="아카이브 소개">
-        <div>
-          <p class="intro-title">About this archive</p>
-          <p class="intro-desc">개인적인 배움과 프로젝트를 분야별로 분류하고, 시간이 지나도 다시 쉽게 찾아볼 수 있도록 정리합니다.</p>
-        </div>
+      <aside class="about-card">
+        <div class="about-label">✳　ABOUT THIS ARCHIVE</div>
+        <h2>기록은 쌓이고,<br>경험은 남습니다.</h2>
+        <p>개인적인 배움과 프로젝트를 분야별로 분류하고, 시간이 지나도 다시 쉽게 찾아볼 수 있도록 정리합니다.</p>
         <div class="stats">
-          <div><span class="stat-value" id="total-count">0</span><span class="stat-label">전체 기록</span></div>
-          <div><span class="stat-value">4</span><span class="stat-label">기록 분야</span></div>
+          <div><b id="totalCount">0</b><span>전체 기록</span></div>
+          <div><b>4</b><span>기록 분야</span></div>
         </div>
+        <div class="deco" aria-hidden="true">記</div>
       </aside>
     </section>
 
-    <section id="articles" class="container archive" aria-labelledby="archive-title">
-      <div class="archive-heading">
-        <div><div class="section-kicker">THE COLLECTION</div><h2 id="archive-title">아카이브</h2></div>
-        <div class="results" id="result-count" aria-live="polite">불러오는 중</div>
+    <section id="archive" class="archive-section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">● THE COLLECTION</p>
+            <h2>나의 아카이브<span class="green-dot">.</span></h2>
+            <p>분야별로 정리한 기록을 살펴보세요.</p>
+          </div>
+          <div class="entries">TOTAL ENTRIES <b id="visibleCount">00</b></div>
+        </div>
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="⌕  제목, 내용, 태그 검색" aria-label="게시글 검색">
+          <select id="sort" aria-label="정렬">
+            <option value="newest">최신 기록순</option>
+            <option value="oldest">오래된 기록순</option>
+            <option value="title">제목 가나다순</option>
+          </select>
+        </div>
+        <div class="chips" aria-label="카테고리 선택">
+          <button class="chip active" data-category="all" type="button">전체</button>
+          <button class="chip" data-category="education" type="button">교육</button>
+          <button class="chip" data-category="research" type="button">연구</button>
+          <button class="chip" data-category="work" type="button">업무</button>
+          <button class="chip" data-category="self-development" type="button">자기계발</button>
+        </div>
+        <p id="loadMessage" class="message" hidden></p>
+        <div id="posts" class="post-grid"></div>
+        <div id="empty" class="empty" hidden>
+          <span>✦</span>
+          <h3>표시할 기록이 없습니다.</h3>
+          <p>첫 기록을 작성하거나 다른 검색어를 사용해 보세요.</p>
+        </div>
       </div>
-      <div class="toolbar">
-        <label class="search-box">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-          <input id="search" type="search" placeholder="제목, 내용, 태그 검색" aria-label="게시글 검색" autocomplete="off">
-        </label>
-        <div class="filter-note">최신 기록순</div>
+    </section>
+
+    <section id="editor" class="editor-section" hidden>
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">● WRITING DESK</p>
+            <h2>기록 남기기<span class="green-dot">.</span></h2>
+            <p>글은 본인 GitHub 계정의 권한으로만 저장됩니다.</p>
+          </div>
+          <button id="writeClose" class="btn btn-outline" type="button">← 목록으로</button>
+        </div>
+        <div class="login-box">
+          <div>
+            <h3>GitHub 관리자 연결</h3>
+            <p>본인 GitHub 계정으로 발급한 Fine-grained token을 입력하세요. 저장소 <b>jeonyunchang/yunchang</b>에 <b>Contents: Read and write</b> 권한이 필요합니다. 토큰은 브라우저 메모리에만 유지됩니다.</p>
+            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">토큰 발급하기 ↗</a>
+          </div>
+          <div>
+            <label for="token">GitHub 토큰</label>
+            <div class="token-row">
+              <input id="token" type="password" placeholder="github_pat_..." autocomplete="off">
+              <button id="connect" class="btn btn-outline" type="button">연결</button>
+            </div>
+            <p id="authInfo">연결되지 않음</p>
+            <button id="disconnect" class="text-btn" type="button" hidden>연결 해제</button>
+          </div>
+        </div>
+        <div class="editor-grid">
+          <form id="postForm" class="panel">
+            <div class="form-top">
+              <h3 id="formTitle">새 기록 작성</h3>
+              <button id="clearForm" type="button" class="text-btn">초기화</button>
+            </div>
+            <label>제목 *
+              <input id="title" maxlength="120" required placeholder="기록 제목">
+            </label>
+            <div class="two-cols">
+              <label>분야 *
+                <select id="category">
+                  <option value="education">교육</option>
+                  <option value="research">연구</option>
+                  <option value="work">업무</option>
+                  <option value="self-development">자기계발</option>
+                </select>
+              </label>
+              <label>작성일 *
+                <input id="date" type="date" required>
+              </label>
+            </div>
+            <label>한 줄 소개
+              <input id="summary" maxlength="220" placeholder="목록에 표시할 짧은 소개">
+            </label>
+            <label>태그
+              <input id="tags" placeholder="지리, 수업, 연구 (쉼표로 구분)">
+            </label>
+            <label>본문 *
+              <textarea id="content" rows="12" required placeholder="기록을 작성해 주세요."></textarea>
+            </label>
+            <p id="formInfo" class="message" role="status"></p>
+            <div class="actions">
+              <button id="save" type="submit" class="btn btn-green">GitHub에 저장하기</button>
+              <button id="delete" type="button" class="btn btn-danger" hidden>이 글 삭제</button>
+            </div>
+          </form>
+          <aside class="panel preview">
+            <p class="eyebrow">LIVE PREVIEW</p>
+            <span id="previewCategory" class="category-tag">교육</span>
+            <h3 id="previewTitle">새 기록의 제목</h3>
+            <small id="previewDate"></small>
+            <p id="previewSummary">한 줄 소개 미리보기</p>
+            <p id="previewContent">여기에 본문 미리보기가 표시됩니다.</p>
+          </aside>
+        </div>
       </div>
-      <div class="filter-list" role="group" aria-label="게시글 분야 선택">
-        <button class="filter-button active" type="button" data-filter="all" aria-pressed="true">전체</button>
-        <button class="filter-button" type="button" data-filter="education" aria-pressed="false">교육</button>
-        <button class="filter-button" type="button" data-filter="research" aria-pressed="false">연구</button>
-        <button class="filter-button" type="button" data-filter="work" aria-pressed="false">업무</button>
-        <button class="filter-button" type="button" data-filter="self-development" aria-pressed="false">자기계발</button>
-      </div>
-      <p id="error-message" class="message" role="alert" hidden></p>
-      <div id="post-list" class="cards" aria-live="polite"></div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer-inner"><span>© <span id="year"></span> 나의 아카이브</span><span>생각과 경험을 기록하는 공간</span></div>
+  <footer>
+    <div class="container footer-inner">
+      <span>記 나의 아카이브</span>
+      <span>© <span id="year"></span> 기록과 경험을 쌓는 공간</span>
+    </div>
   </footer>
 
-  <dialog id="post-dialog" aria-labelledby="dialog-title">
-    <div class="dialog-head"><span>ARCHIVE NOTE</span><button type="button" class="dialog-close" id="dialog-close" aria-label="글 닫기">×</button></div>
-    <div class="dialog-body" id="dialog-body"></div>
+  <dialog id="postDialog">
+    <button id="modalClose" class="modal-close" type="button" aria-label="닫기">✕</button>
+    <span id="modalCategory" class="category-tag"></span>
+    <h2 id="modalTitle"></h2>
+    <small id="modalDate"></small>
+    <p id="modalSummary"></p>
+    <div id="modalTags" class="tags"></div>
+    <hr>
+    <div id="modalContent" class="post-content"></div>
+    <div class="dialog-actions">
+      <button id="modalEdit" class="btn btn-outline" type="button" hidden>수정하기</button>
+      <button id="modalDone" class="btn btn-green" type="button">닫기</button>
+    </div>
   </dialog>
-
-  <script src="./app.js" defer></script>
 </body>
 </html>
