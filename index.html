@@ -2,38 +2,423 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>윤창의 지도</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="교육, 연구, 업무, 자기계발에 관한 개인 기록 아카이브">
+  <title>나의 아카이브 | 개인 기록</title>
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --panel: #ffffff;
+      --ink: #172323;
+      --muted: #697571;
+      --line: #dde4df;
+      --accent: #205d50;
+      --accent-soft: #e8f2ed;
+      --shadow: 0 15px 55px rgba(23, 44, 34, .075);
+      --round: 22px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif; line-height: 1.65; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #78a99a; outline-offset: 3px; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+    .site-header { position: sticky; top: 0; z-index: 20; background: rgba(247,248,246,.95); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .header-inner { display: flex; justify-content: space-between; gap: 24px; align-items: center; min-height: 77px; }
+    .brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; font-size: 1.04rem; font-weight: 850; letter-spacing: -.035em; }
+    .brand-icon { width: 33px; height: 33px; display: grid; place-items: center; border-radius: 11px; background: var(--accent); color: white; font-weight: 900; }
+    .nav { display: flex; gap: 5px; align-items: center; white-space: nowrap; }
+    .nav a { border-radius: 99px; color: #55625f; font-size: .88rem; font-weight: 700; padding: 9px 14px; transition: .2s ease; }
+    .nav a:hover, .nav a.active { background: var(--accent-soft); color: var(--accent); }
+    .hero { padding-top: 76px; padding-bottom: 58px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, .8fr); gap: 35px; align-items: stretch; }
+    .eyebrow { color: var(--accent); letter-spacing: .19em; font-size: .75rem; font-weight: 900; }
+    .hero h1 { margin: 19px 0 17px; font-weight: 850; font-size: clamp(2.1rem, 4.5vw, 3.8rem); line-height: 1.27; letter-spacing: -.075em; word-break: keep-all; }
+    .hero h1 em { color: var(--accent); font-style: normal; }
+    .hero-copy { max-width: 620px; margin: 0; color: var(--muted); font-size: 1rem; word-break: keep-all; }
+    .hero-actions { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+    .hero-action { display: inline-flex; align-items: center; gap: 9px; padding: 12px 20px; border-radius: 11px; color: white; background: var(--accent); font-weight: 750; font-size: .92rem; }
+    .hero-action:hover { background: #154838; }
+    .intro-card { padding: 28px 27px; border: 1px solid #d6e4da; background: linear-gradient(135deg, #e8f2e9, #f4f7f0 75%); border-radius: var(--round); display: flex; flex-direction: column; justify-content: space-between; min-height: 255px; }
+    .intro-title { margin: 0 0 12px; font-size: 1rem; font-weight: 800; }
+    .intro-desc { font-size: .9rem; color: #52635a; margin: 0; word-break: keep-all; }
+    .stats { display: flex; gap: 20px; border-top: 1px solid #cbddd0; margin-top: 24px; padding-top: 18px; }
+    .stat-value { font-size: 1.52rem; font-weight: 850; letter-spacing: -.05em; }
+    .stat-label { display: block; color: #718177; font-size: .75rem; font-weight: 650; }
+    .archive { padding-top: 34px; padding-bottom: 92px; scroll-margin-top: 100px; }
+    .archive-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; margin-bottom: 24px; }
+    .section-kicker { color: var(--accent); font-weight: 850; letter-spacing: .15em; font-size: .72rem; }
+    .archive h2 { margin: 4px 0 0; font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.055em; }
+    .results { color: var(--muted); font-size: .82rem; }
+    .toolbar { display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: center; margin-bottom: 24px; }
+    .search-box { display: flex; align-items: center; gap: 12px; padding: 0 15px; background: var(--panel); height: 48px; border: 1px solid var(--line); border-radius: 12px; }
+    .search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(32,93,80,.1); }
+    .search-box svg { flex-shrink: 0; color: #778780; }
+    .search-box input { outline: 0; border: 0; background: transparent; min-width: 0; width: 100%; color: var(--ink); font-size: .9rem; }
+    .search-box input:focus-visible { outline: 0; }
+    .filter-note { font-size: .8rem; color: var(--muted); }
+    .filter-list { display: flex; gap: 9px; flex-wrap: wrap; padding-bottom: 21px; }
+    .filter-button { border: 1px solid var(--line); background: #fff; padding: 9px 16px; border-radius: 100px; font-size: .87rem; font-weight: 750; color: #61706a; transition: .2s ease; }
+    .filter-button:hover { color: var(--accent); border-color: #a6c9b7; }
+    .filter-button.active { color: white; background: var(--accent); border-color: var(--accent); }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .post-card { width: 100%; display: flex; flex-direction: column; text-align: left; padding: 25px; min-height: 255px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 2px 2px rgba(0,0,0,.012); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    .post-card:hover { transform: translateY(-3px); border-color: #b2d2bf; box-shadow: var(--shadow); }
+    .card-top { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .category-label { font-size: .73rem; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 4px 9px; font-weight: 800; }
+    .post-date { font-size: .75rem; color: #87918b; }
+    .post-title { margin-top: 19px; font-size: 1.1rem; line-height: 1.5; font-weight: 850; letter-spacing: -.035em; word-break: keep-all; }
+    .post-summary { margin: 10px 0 17px; font-size: .89rem; color: #66736d; display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; word-break: break-word; }
+    .card-bottom { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 20px; border-top: 1px solid #edf0ed; gap: 10px; }
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
+    .tag { font-size: .72rem; color: #83918a; }
+    .read-more { flex-shrink: 0; font-size: .8rem; color: var(--accent); font-weight: 800; }
+    .empty-state { grid-column: 1/-1; padding: 55px 24px; text-align: center; border: 1px dashed #c4d7ca; background: #fdfefd; border-radius: 16px; }
+    .empty-state h3 { margin: 0 0 10px; font-size: 1.1rem; }
+    .empty-state p { color: var(--muted); margin: 0; font-size: .9rem; }
+    .message { padding: 18px 20px; background: #fff7e9; border: 1px solid #e9d4aa; border-radius: 12px; color: #795320; margin: 0 0 20px; font-size: .9rem; }
+    .site-footer { border-top: 1px solid var(--line); background: #f4f6f3; }
+    .footer-inner { padding-top: 25px; padding-bottom: 25px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: .82rem; }
+    dialog { box-sizing: border-box; padding: 0; border: 1px solid #d8e2db; border-radius: 21px; background: #fff; width: min(760px, calc(100% - 30px)); max-height: min(88dvh, 900px); box-shadow: 0 30px 120px rgba(20, 41, 33, .32); }
+    dialog::backdrop { background: rgba(13, 27, 23, .57); backdrop-filter: blur(4px); }
+    .dialog-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 16px 23px; background: #fff; border-bottom: 1px solid #edf0ed; }
+    .dialog-head span { font-size: .83rem; font-weight: 850; color: var(--accent); }
+    .dialog-close { border: 0; border-radius: 9px; background: #edf3ef; width: 35px; height: 35px; display: grid; place-items: center; color: var(--accent); font-size: 1.35rem; line-height: 1; }
+    .dialog-body { padding: 37px 42px 43px; }
+    .dialog-meta { display: flex; gap: 11px; flex-wrap: wrap; align-items: center; font-size: .8rem; color: var(--muted); }
+    .dialog-title { margin: 17px 0 12px; font-size: clamp(1.45rem, 3.3vw, 2.3rem); line-height: 1.37; word-break: keep-all; letter-spacing: -.052em; }
+    .dialog-summary { margin: 0; color: var(--muted); font-size: .95rem; }
+    .dialog-divider { margin: 26px 0; border: 0; border-top: 1px solid #e8ede9; }
+    .dialog-content { color: #34453b; font-size: .97rem; line-height: 1.95; overflow-wrap: anywhere; }
+    .dialog-content p { margin: 0 0 1.1em; white-space: pre-wrap; }
+    .post-image { display: block; max-width: 100%; height: auto; border-radius: 13px; margin: 19px 0 26px; }
+    .links-heading { margin: 22px 0 10px; font-size: .88rem; font-weight: 850; }
+    .post-links { display: flex; gap: 9px; flex-wrap: wrap; }
+    .post-links a { color: var(--accent); font-size: .86rem; font-weight: 800; padding: 9px 12px; border-radius: 9px; border: 1px solid #c9dcd0; background: var(--accent-soft); overflow-wrap: anywhere; }
+    .dialog-footer { border-top: 1px solid #edf0ed; padding-top: 20px; margin-top: 28px; display: flex; flex-wrap: wrap; gap: 9px; }
+    .copy-link { border: 1px solid var(--line); border-radius: 9px; background: #fff; padding: 9px 12px; font-weight: 750; color: #526458; }
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; gap: 25px; padding-top: 55px; }
+      .intro-card { min-height: 180px; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .header-inner { flex-wrap: wrap; padding-top: 12px; padding-bottom: 11px; gap: 5px; }
+      .nav { width: 100%; overflow-x: auto; padding: 3px 0; scrollbar-width: none; }
+      .nav::-webkit-scrollbar { display: none; }
+      .nav a { padding: 7px 12px; }
+    }
+    @media (max-width: 620px) {
+      .container { padding: 0 18px; }
+      .header-inner { min-height: 68px; }
+      .hero { padding-top: 41px; padding-bottom: 36px; gap: 20px; }
+      .hero h1 { margin-top: 12px; font-size: clamp(2rem, 9vw, 2.85rem); }
+      .hero-copy { font-size: .9rem; }
+      .intro-card { padding: 20px; border-radius: 16px; min-height: auto; }
+      .stats { margin-top: 16px; }
+      .archive { padding-top: 23px; padding-bottom: 60px; }
+      .archive-heading { align-items: flex-start; }
+      .toolbar { grid-template-columns: 1fr; gap: 5px; }
+      .filter-note { text-align: right; }
+      .filter-list { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -18px; padding-left: 18px; padding-right: 18px; }
+      .filter-list::-webkit-scrollbar { display: none; }
+      .filter-button { white-space: nowrap; padding: 9px 13px; }
+      .cards { grid-template-columns: 1fr; gap: 12px; }
+      .post-card { min-height: 206px; padding: 20px; }
+      .post-title { margin-top: 14px; }
+      .dialog-head { padding: 11px 14px; }
+      .dialog-body { padding: 24px 20px 30px; }
+      dialog { max-height: 90dvh; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <header class="profile">
-        <div class="avatar">윤</div>
+  <!--
+    읽기 전용 GitHub Pages 아카이브
+    1) 게시글 작성/수정/삭제: GitHub의 data/posts.json 파일에서만 수행
+    2) 이 HTML에는 글쓰기 API, 공개 입력 폼, 저장 기능이 없음
+    3) 현재 운영 중인 기존 웹사이트의 원본 코드를 확인하지 못해 이 파일은 독립형 대체 템플릿임
+    4) 기존 글/디자인이 자동으로 이전되는 것은 아님. 기존 index.html을 먼저 백업하세요.
+  -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./" aria-label="아카이브 홈으로 이동">
+        <span class="brand-icon" aria-hidden="true">記</span>
+        <span>나의 아카이브</span>
+      </a>
+      <nav class="nav" aria-label="주요 메뉴">
+        <a href="#articles" data-category="all" class="active">전체</a>
+        <a href="#articles" data-category="education">교육</a>
+        <a href="#articles" data-category="research">연구</a>
+        <a href="#articles" data-category="work">업무</a>
+        <a href="#articles" data-category="self-development">자기계발</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="container hero" aria-labelledby="hero-title">
+      <div>
+        <div class="eyebrow">PERSONAL ARCHIVE · 기록을 쌓는 공간</div>
+        <h1 id="hero-title">하루의 경험을<br><em>오래 남는 기록으로.</em></h1>
+        <p class="hero-copy">교육, 연구, 업무 그리고 자기계발. 배우고 시도했던 순간들을 차곡차곡 모아두는 개인 아카이브입니다.</p>
+        <div class="hero-actions"><a href="#articles" class="hero-action">기록 둘러보기 <span aria-hidden="true">↗</span></a></div>
+      </div>
+      <aside class="intro-card" aria-label="아카이브 소개">
         <div>
-          <h1>윤창</h1>
-          <p class="subtitle">Researcher · 지리 교사</p>
+          <p class="intro-title">About this archive</p>
+          <p class="intro-desc">개인적인 배움과 프로젝트를 분야별로 분류하고, 시간이 지나도 다시 쉽게 찾아볼 수 있도록 정리합니다.</p>
         </div>
-      </header>
+        <div class="stats">
+          <div><span class="stat-value" id="total-count">0</span><span class="stat-label">전체 기록</span></div>
+          <div><span class="stat-value">4</span><span class="stat-label">기록 분야</span></div>
+        </div>
+      </aside>
+    </section>
 
-      <p class="intro">
-        나와 관련된 장소를 지도 위에 모았습니다. 마커를 클릭하거나 목록에서 장소를 선택해 보세요.
-      </p>
+    <section id="articles" class="container archive" aria-labelledby="archive-title">
+      <div class="archive-heading">
+        <div><div class="section-kicker">THE COLLECTION</div><h2 id="archive-title">아카이브</h2></div>
+        <div class="results" id="result-count" aria-live="polite">불러오는 중</div>
+      </div>
+      <div class="toolbar">
+        <label class="search-box">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="search" type="search" placeholder="제목, 내용, 태그 검색" aria-label="게시글 검색" autocomplete="off">
+        </label>
+        <div class="filter-note">최신 기록순</div>
+      </div>
+      <div class="filter-list" role="group" aria-label="게시글 분야 선택">
+        <button class="filter-button active" type="button" data-filter="all" aria-pressed="true">전체</button>
+        <button class="filter-button" type="button" data-filter="education" aria-pressed="false">교육</button>
+        <button class="filter-button" type="button" data-filter="research" aria-pressed="false">연구</button>
+        <button class="filter-button" type="button" data-filter="work" aria-pressed="false">업무</button>
+        <button class="filter-button" type="button" data-filter="self-development" aria-pressed="false">자기계발</button>
+      </div>
+      <p id="error-message" class="message" role="alert" hidden></p>
+      <div id="post-list" class="cards" aria-live="polite"></div>
+    </section>
+  </main>
 
-      <section class="places">
-        <h2>장소 목록</h2>
-        <ul id="place-list" class="place-list"></ul>
-      </section>
-    </aside>
+  <footer class="site-footer">
+    <div class="container footer-inner"><span>© <span id="year"></span> 나의 아카이브</span><span>생각과 경험을 기록하는 공간</span></div>
+  </footer>
 
-    <main class="map-panel">
-      <div id="map"></div>
-    </main>
-  </div>
+  <dialog id="post-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-head"><span>ARCHIVE NOTE</span><button type="button" class="dialog-close" id="dialog-close" aria-label="글 닫기">×</button></div>
+    <div class="dialog-body" id="dialog-body"></div>
+  </dialog>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="app.js"></script>
+  <script>
+    'use strict';
+    // GitHub에서 글을 편집할 파일: data/posts.json
+    // 배포 경로가 /yunchang/인 GitHub Pages에서도 상대경로로 안전하게 작동합니다.
+    const POST_DATA_URL = './data/posts.json';
+    const CATEGORY_NAMES = Object.freeze({
+      education: '교육', research: '연구', work: '업무', 'self-development': '자기계발'
+    });
+    const state = { posts: [], category: 'all', query: '' };
+    const $ = (selector) => document.querySelector(selector);
+    $('#year').textContent = String(new Date().getFullYear());
+
+    function el(tag, className, value) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (value !== undefined && value !== null) node.textContent = String(value);
+      return node;
+    }
+    function normalizePost(item) {
+      if (!item || typeof item !== 'object' || !CATEGORY_NAMES[item.category]) return null;
+      if (!item.id || !item.title) return null;
+      return {
+        id: String(item.id), title: String(item.title), category: item.category,
+        date: /^\d{4}-\d{2}-\d{2}$/.test(item.date || '') ? item.date : '',
+        summary: typeof item.summary === 'string' ? item.summary : '',
+        content: typeof item.content === 'string' ? item.content : '',
+        tags: Array.isArray(item.tags) ? item.tags.filter(tag => typeof tag === 'string').slice(0, 12) : [],
+        image: typeof item.image === 'string' ? item.image : '',
+        links: Array.isArray(item.links) ? item.links.filter(link => link && typeof link.label === 'string' && typeof link.url === 'string') : []
+      };
+    }
+    function safeUrl(value) {
+      try {
+        const parsed = new URL(value, document.baseURI);
+        return (parsed.protocol === 'https:' || parsed.protocol === 'http:') ? parsed.href : null;
+      } catch (_) { return null; }
+    }
+    function filterPosts() {
+      const query = state.query.trim().toLocaleLowerCase();
+      return state.posts.filter(post => {
+        if (state.category !== 'all' && post.category !== state.category) return false;
+        if (!query) return true;
+        return [post.title, post.summary, post.content, CATEGORY_NAMES[post.category], ...post.tags]
+          .join(' ').toLocaleLowerCase().includes(query);
+      });
+    }
+    function setCategory(category) {
+      if (category !== 'all' && !CATEGORY_NAMES[category]) return;
+      state.category = category;
+      document.querySelectorAll('[data-filter]').forEach(button => {
+        const on = button.dataset.filter === category;
+        button.classList.toggle('active', on);
+        button.setAttribute('aria-pressed', String(on));
+      });
+      document.querySelectorAll('[data-category]').forEach(link => {
+        const on = link.dataset.category === category;
+        link.classList.toggle('active', on);
+        if (on) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      render();
+    }
+    function render() {
+      const list = $('#post-list');
+      list.replaceChildren();
+      const visible = filterPosts();
+      $('#result-count').textContent = `${visible.length}개의 기록`;
+      if (!visible.length) {
+        const empty = el('div', 'empty-state');
+        empty.append(el('h3', '', state.posts.length === 0 ? '첫 기록을 기다리고 있어요' : '검색 결과가 없어요'));
+        empty.append(el('p', '', state.posts.length === 0
+          ? 'GitHub의 data/posts.json 파일에 글을 추가하면 이곳에 자동으로 나타납니다.'
+          : '다른 검색어 또는 분야를 선택해 보세요.'));
+        list.append(empty);
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      visible.forEach(post => {
+        const button = el('button', 'post-card');
+        button.type = 'button';
+        button.setAttribute('aria-label', `${post.title} 글 읽기`);
+        const top = el('div', 'card-top');
+        top.append(el('span', 'category-label', CATEGORY_NAMES[post.category]));
+        top.append(el('time', 'post-date', post.date));
+        const bottom = el('div', 'card-bottom');
+        const tags = el('div', 'tags');
+        post.tags.slice(0, 3).forEach(tag => tags.append(el('span', 'tag', `#${tag}`)));
+        bottom.append(tags, el('span', 'read-more', '읽어보기 ↗'));
+        button.append(top, el('div', 'post-title', post.title), el('p', 'post-summary', post.summary || post.content.slice(0, 110)), bottom);
+        button.addEventListener('click', () => {
+          location.hash = `post/${encodeURIComponent(post.id)}`;
+          if (location.hash === `#post/${encodeURIComponent(post.id)}`) syncDialog();
+        });
+        fragment.append(button);
+      });
+      list.append(fragment);
+    }
+    function renderArticle(post) {
+      const body = $('#dialog-body');
+      body.replaceChildren();
+      const meta = el('div', 'dialog-meta');
+      meta.append(el('span', 'category-label', CATEGORY_NAMES[post.category]));
+      meta.append(el('time', '', post.date));
+      body.append(meta, el('h2', 'dialog-title', post.title));
+      body.querySelector('.dialog-title').id = 'dialog-title';
+      if (post.summary) body.append(el('p', 'dialog-summary', post.summary));
+      if (post.tags.length) {
+        const tags = el('div', 'tags');
+        tags.style.marginTop = '15px';
+        post.tags.forEach(tag => tags.append(el('span', 'tag', `#${tag}`)));
+        body.append(tags);
+      }
+      body.append(el('hr', 'dialog-divider'));
+      if (post.image) {
+        const imageHref = safeUrl(post.image);
+        if (imageHref) {
+          const image = el('img', 'post-image');
+          image.src = imageHref;
+          image.alt = `${post.title} 관련 이미지`;
+          image.loading = 'lazy';
+          body.append(image);
+        }
+      }
+      const content = el('div', 'dialog-content');
+      post.content.split(/\n\s*\n/).forEach(paragraph => {
+        if (paragraph.trim()) content.append(el('p', '', paragraph));
+      });
+      if (!content.children.length) content.append(el('p', '', '본문 내용이 없습니다.'));
+      body.append(content);
+      if (post.links.length) {
+        body.append(el('h3', 'links-heading', '관련 자료'));
+        const links = el('div', 'post-links');
+        post.links.forEach(link => {
+          const href = safeUrl(link.url);
+          if (!href) return;
+          const a = el('a', '', `${link.label} ↗`);
+          a.href = href;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          links.append(a);
+        });
+        body.append(links);
+      }
+      const footer = el('div', 'dialog-footer');
+      const share = el('button', 'copy-link', '글 링크 복사');
+      share.type = 'button';
+      share.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          share.textContent = '복사했어요 ✓';
+        } catch (_) {
+          share.textContent = '주소창의 URL을 복사해 주세요';
+        }
+      });
+      footer.append(share);
+      body.append(footer);
+    }
+    function syncDialog() {
+      const dialog = $('#post-dialog');
+      const hash = decodeURIComponent(location.hash.slice(1));
+      if (!hash.startsWith('post/')) {
+        if (dialog.open) dialog.close();
+        return;
+      }
+      const id = hash.slice(5);
+      const post = state.posts.find(item => item.id === id);
+      if (!post) {
+        if (dialog.open) dialog.close();
+        return;
+      }
+      renderArticle(post);
+      if (!dialog.open) dialog.showModal();
+    }
+    function closeArticle() {
+      if (location.hash.startsWith('#post/')) location.hash = 'articles';
+      if ($('#post-dialog').open) $('#post-dialog').close();
+    }
+    document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => setCategory(button.dataset.filter)));
+    document.querySelectorAll('[data-category]').forEach(link => link.addEventListener('click', () => setCategory(link.dataset.category)));
+    $('#search').addEventListener('input', event => { state.query = event.target.value; render(); });
+    $('#dialog-close').addEventListener('click', closeArticle);
+    $('#post-dialog').addEventListener('click', event => { if (event.target === $('#post-dialog')) closeArticle(); });
+    $('#post-dialog').addEventListener('close', () => { if (location.hash.startsWith('#post/')) location.hash = 'articles'; });
+    addEventListener('hashchange', syncDialog);
+
+    async function loadPosts() {
+      try {
+        const response = await fetch(POST_DATA_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!Array.isArray(data)) throw new Error('JSON 최상위 형식은 배열([ ])이어야 합니다.');
+        const normalized = data.map(normalizePost).filter(Boolean);
+        const knownIds = new Set();
+        state.posts = normalized.filter(post => {
+          if (knownIds.has(post.id)) return false;
+          knownIds.add(post.id);
+          return true;
+        }).sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'ko'));
+        $('#total-count').textContent = String(state.posts.length);
+        render();
+        syncDialog();
+      } catch (error) {
+        $('#error-message').hidden = false;
+        $('#error-message').textContent = '글 목록을 불러오지 못했습니다. data/posts.json 파일이 같은 배포 폴더에 있는지, JSON 형식이 올바른지 확인해 주세요.';
+        $('#result-count').textContent = '불러오기 실패';
+        console.error('게시글 파일 읽기 실패:', error);
+      }
+    }
+    loadPosts();
+  </script>
 </body>
 </html>
